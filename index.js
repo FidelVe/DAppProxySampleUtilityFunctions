@@ -44,7 +44,20 @@ async function main() {
     props.network.hardhat,
     props.wallet.hardhat.address
   );
+  console.log("btp destination");
   console.log(btpDestination);
+
+  const sendMessageResult = await xcall.sendCallMessage(
+    btpDestination,
+    "0x1234"
+  );
+  console.log("send message result");
+  console.log(sendMessageResult);
+  console.log("sleeping 2 seconds");
+  await xcall.sleep(3000);
+  const txData = await xcall.getTransactionResult(sendMessageResult);
+  console.log("tx data");
+  console.log(txData);
 }
 
 main();

@@ -21,7 +21,7 @@ class TestXcall {
     this.contracts = props.contract;
   }
 
-  getKeyStore(path) {
+  getKeystore(path) {
     const keystore = fs.readFileSync(path, "utf8");
     return JSON.parse(keystore);
   }
@@ -74,7 +74,11 @@ class TestXcall {
   }
 
   async getTransactionResult(txHash) {
-    return await this.iconService.getTransactionResult(txHash).execute();
+    try {
+      return await this.iconService.getTransactionResult(txHash).execute();
+    } catch (e) {
+      console.log(`error running getTransactionResult:\n`, e);
+    }
   }
 
   async sendTx(txObj, wallet) {
