@@ -139,13 +139,7 @@ class TestXcall {
       }
       for (; height < next; height++) {
         console.log(`waitEventEvmChain: ${height} -> ${next}`);
-        const events = await contract.queryFilter(
-          filterCM,
-          height - 1000,
-          height
-        );
-        console.log("internal events");
-        console.log(events);
+        const events = await contract.queryFilter(filterCM, height);
         if (events.length > 0) {
           return events;
         }

@@ -73,7 +73,7 @@ async function main() {
     "CallMessageSent(Address,str,int,int)",
     "cx17cb94775d2f774277bfbf3477be5f36ca5af37f"
   );
-  console.log("\n## filter event. Get CallMessageSent event");
+  console.log("\n## filter event. Get CallMessageSent event on ICON chain");
   console.log(a);
 
   // TEST 2: hardhat
@@ -81,16 +81,16 @@ async function main() {
   const xcallContract = await xcall.getCallServiceContract();
   console.log(xcallContract.address);
 
-  console.log("\n## get CallMessageSent event");
+  console.log("\n## get CallMessage event on evm chain");
   const filterCM = xcallContract.filters.CallMessage(
     btpSource,
     props.contract.dapp.hardhat
   );
-  console.log("filterCM logs");
+  console.log("# filterCM logs");
   console.log(filterCM);
 
   const events = await xcall.waitEventEvmChain(xcallContract, filterCM);
-  console.log("events");
+  console.log("# events");
   console.log(events);
 }
 
