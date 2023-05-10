@@ -3,7 +3,6 @@ PWD = $(abspath ./)
 GRADLE = ./gradlew
 
 HARDHAT = npx hardhat
-TS_NODE = npx ts-node
 NETWORK_LOCAL = --network localhost
 NETWORK_HARDHAT = --network hardhat2
 SOLIDITY_CONTRACTS = ./solidity/contracts
