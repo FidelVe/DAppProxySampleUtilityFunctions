@@ -1,17 +1,9 @@
 require("dotenv").config();
 require("@nomiclabs/hardhat-ethers");
 
-// const PK1 = process.env.PK1 == null ? "" : process.env.PK1;
+const PK1 = process.env.PK1 == null ? "" : process.env.PK1;
 
 const config = {
-  // networks: {
-  //   hardhat2: {
-  //     url: "https://server03.espanicon.team",
-  //     chainId: 1337,
-  //     gasPrice: 20000000000,
-  //     accounts: [PK1],
-  //   },
-  // },
   paths: {
     sources: "./solidity/contracts",
     tests: "./solidity/test",
@@ -28,5 +20,16 @@ const config = {
     },
   },
 };
+
+if (process.env.PK1) {
+  config.networks = {
+    hardhat2: {
+      url: "https://server03.espanicon.team",
+      chainId: 1337,
+      gasPrice: 20000000000,
+      accounts: [PK1],
+    },
+  };
+}
 
 module.exports = config;
