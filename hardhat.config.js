@@ -21,7 +21,7 @@ const config = {
   },
 };
 
-if (PK1 === "") {
+if (PK1 != "") {
   config.networks = {
     hardhat2: {
       url: "https://server03.espanicon.team",
