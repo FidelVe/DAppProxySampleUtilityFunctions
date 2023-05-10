@@ -1,7 +1,9 @@
 require("dotenv").config();
 const IconService = require("icon-sdk-js");
 const { ethers } = require("hardhat");
+const { BigNumber } = ethers;
 const fs = require("fs");
+const Web3Utils = require("web3-utils");
 
 const {
   IconWallet,
@@ -25,6 +27,16 @@ class TestXcall {
       this.getKeystore(this.wallets.icon.keystorePath),
       this.wallets.icon.password
     );
+  }
+
+  encodeMessage(msg) {
+    const encoded = Web3Utils.fromUtf8(msg);
+    return encoded;
+  }
+
+  decodeMessage(msg) {
+    const decoded = Web3Utils.hexToString(msg);
+    return decoded;
   }
 
   getKeystore(path) {
@@ -61,16 +73,15 @@ class TestXcall {
     return `btp://${network}/${address}`;
   }
 
-  async getCallMessageEvent(txHash, maxLoops = 10) {
-    for (let i = 0; i < maxLoops; i++) {
-      const eventlogs = await this.getEventLogs(txHash);
-      if (eventlogs != null && eventlogs.length > 2) {
-        return eventlogs[2];
-      }
-      await this.sleep(1000);
-    }
-
-    return null;
+  getCallMessageSentEvent(event) {
+    const indexed = event[0].indexed || [];
+    const data = event[0].data || [];
+    return {
+      _from: indexed[1],
+      _to: indexed[2],
+      _sn: BigNumber.from(indexed[3]),
+      _nsn: BigNumber.from(data[0]),
+    };
   }
 
   async getEventLogs(txHash) {
@@ -127,6 +138,33 @@ class TestXcall {
     return [];
   }
 
+  async checkCallExecuted(receipts, contract) {
+    let event;
+    const logs = this.filterEventEvmChain(
+      contract,
+      contract.filters.CallExecuted(),
+      receipts
+    );
+    if (logs.length > 0) {
+      event = logs[0].args;
+    }
+    return event;
+  }
+
+  async verifyReceivedMessage(receipts) {
+    const contract = await this.getDappProxyContract();
+    let event;
+    const logs = this.filterEventEvmChain(
+      contract,
+      contract.filters.MessageReceived(),
+      receipts
+    );
+    if (logs.length > 0) {
+      event = logs[0].args;
+    }
+    return event;
+  }
+
   async waitEventEvmChain(contract, filterCM) {
     let height = await contract.provider.getBlockNumber();
     let next = height + 1;
@@ -181,6 +219,26 @@ class TestXcall {
       "CallService",
       this.contracts.xcall.hardhat
     );
+  }
+
+  async getDappProxyContract() {
+    return await ethers.getContractAt(
+      "DAppProxySample",
+      this.contracts.dapp.hardhat
+    );
+  }
+
+  async executeCall(reqId) {
+    try {
+      const params = { gasLimit: 15000000 };
+      const contract = await this.getCallServiceContract();
+      const tx = await contract.executeCall(reqId, params);
+      const receipt = await tx.wait(1);
+      return receipt;
+    } catch (e) {
+      console.log("error running executeCall");
+      console.log(e);
+    }
   }
 }
 

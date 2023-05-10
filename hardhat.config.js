@@ -15,18 +15,6 @@ const config = {
       gasPrice: 20000000000,
       accounts: [PK1],
     },
-    bscTestnet: {
-      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
-      chainId: 97,
-      gasPrice: 20000000000,
-      accounts: [PK1],
-    },
-    ethSepolia: {
-      url: "https://sepolia.infura.io/v3/ffbf8ebe228f4758ae82e175640275e0",
-      chainId: 11155111,
-      gasPrice: 20000,
-      accounts: [PK1],
-    },
   },
   paths: {
     sources: "./solidity/contracts",

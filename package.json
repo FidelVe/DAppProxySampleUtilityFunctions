@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "hardhat": "^2.14.0",
-    "icon-sdk-js": "^1.4.1"
+    "icon-sdk-js": "^1.4.1",
+    "web3-utils": "^1.9.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
