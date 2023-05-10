@@ -3,10 +3,6 @@ require("@nomiclabs/hardhat-ethers");
 
 const PK1 = process.env.PK1 == null ? "" : process.env.PK1;
 
-if (PK1 === "") {
-  throw new Error("Please set your PK1 in a .env file");
-}
-
 const config = {
   networks: {
     hardhat2: {
