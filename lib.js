@@ -18,7 +18,10 @@ const { CallTransactionBuilder, CallBuilder } = IconBuilder;
 const deployments = getDeployments();
 const defaultProps = {
   rpc: {
-    icon: process.env.ICON_RPC === "" ? "" : process.env.ICON_RPC,
+    icon:
+      process.env.ICON_RPC === ""
+        ? "http://localhost:9080"
+        : process.env.ICON_RPC,
     hardhat: "",
   },
   nid: {
