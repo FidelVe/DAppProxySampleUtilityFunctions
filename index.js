@@ -1,52 +1,13 @@
-const fs = require("fs");
 const TestXcall = require("./lib");
-
-function getDeployments() {
-  const f = fs.readFileSync("./deployments.json", "utf8");
-  return JSON.parse(f);
-}
 
 async function main() {
   //
-  const deployments = getDeployments();
-  const props = {
-    rpc: {
-      icon: "https://server02.espanicon.team/api/v3",
-      hardhat: "",
-    },
-    nid: {
-      icon: 3,
-    },
-    wallet: {
-      icon: {
-        keystorePath: "./wallets/icon_keystore.json",
-        password: "gochain",
-      },
-      hardhat: {
-        address: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1",
-      },
-    },
-    contract: {
-      xcall: {
-        icon: deployments.icon.contracts.xcall,
-        hardhat: deployments.hardhat2.contracts.xcall,
-      },
-      dapp: {
-        icon: "",
-        hardhat: deployments.hardhat2.contracts.dapp,
-      },
-    },
-    network: {
-      icon: deployments.icon.network,
-      hardhat: deployments.hardhat2.network,
-    },
-  };
 
-  const xcall = new TestXcall(props);
+  const xcall = new TestXcall();
   // TEST 1: send message from icon to hardhat
   const btpDestination = xcall.getBtpAddress(
-    props.network.hardhat,
-    props.contract.dapp.hardhat
+    xcall.network.hardhat,
+    xcall.contracts.dapp.hardhat
   );
 
   const dataToSend = "Hello this is xCall live!";
@@ -54,7 +15,7 @@ async function main() {
   const encoded = xcall.encodeMessage(dataToSend);
 
   const btpSource = xcall.getBtpAddress(
-    props.network.icon,
+    xcall.network.icon,
     xcall.iconWallet.getAddress()
   );
 
@@ -89,7 +50,7 @@ async function main() {
   console.log("\n## get CallMessage event on evm chain");
   const filterCM = xcallContract.filters.CallMessage(
     btpSource,
-    props.contract.dapp.hardhat
+    xcall.contracts.dapp.hardhat
   );
   console.log("# filterCM logs");
   console.log(filterCM);

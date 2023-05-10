@@ -11,7 +11,7 @@
     "networkId": "0x2",
     "blockNum": 75891
   },
-  "hardhat2": {
+  "hardhat": {
     "network": "0x539.hardhat",
     "contracts": {
       "bmcm": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
@@ -22,29 +22,5 @@
       "dapp": "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1"
     },
     "blockNum": 1646
-  },
-  "bsc": {
-    "network": "0x61.bsc",
-    "contracts": {
-      "bmcm": "0xFd82803c9b2E92C628846012c6E5016Ac380f68d",
-      "bmcs": "0x6AB5fB039ABbEE20bf43F84393E528015686fB04",
-      "bmcp": "0x193eD92257E0773ccBA097e0ba4110E588eb0F1c",
-      "bmv": "0xAfDa56289E92338514B5aBF0bf22A7dcA60d7e09",
-      "xcall": "0x6193c0b12116c4963594761d859571b9950a8686",
-      "dapp": "0xb072b7d60C143944fdBb45E22A3ae04DcD0b7432"
-    },
-    "blockNum": 28463560
-  },
-  "eth": {
-    "network": "0xaa36a7.eth2",
-    "contracts": {
-      "bmcm": "0x39FBbE3AeCbe6ED08baf16e13eFE4aA31550CaA2",
-      "bmcs": "0xd6298BBB8b8B8EA273C3CB470B273A1cef552Ef3",
-      "bmcp": "0x50DD9479c45085dC64c6F0a0796040C7768f25CE",
-      "bmv": "0x684ba8F34f9481f7F02aCd4F143506E11AC19E3E",
-      "xcall": "0x9B68bd3a04Ff138CaFfFe6D96Bc330c699F34901",
-      "dapp": "0x0FcBB34A8468CaA65d3f81CAef8C42E43043687c"
-    },
-    "blockNum": 3185472
   }
 }

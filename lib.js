@@ -15,14 +15,46 @@ const {
 
 const { CallTransactionBuilder, CallBuilder } = IconBuilder;
 
+const deployments = getDeployments();
+const defaultProps = {
+  rpc: {
+    icon: process.env.ICON_RPC === "" ? "" : process.env.ICON_RPC,
+    hardhat: "",
+  },
+  nid: {
+    icon: 3,
+  },
+  wallet: {
+    icon: {
+      keystorePath: "./wallets/icon_keystore.json",
+      password: "gochain",
+    },
+  },
+  contract: {
+    xcall: {
+      icon: deployments.icon.contracts.xcall,
+      hardhat: deployments.hardhat.contracts.xcall,
+    },
+    dapp: {
+      icon: "",
+      hardhat: deployments.hardhat.contracts.dapp,
+    },
+  },
+  network: {
+    icon: deployments.icon.network,
+    hardhat: deployments.hardhat.network,
+  },
+};
+
 class TestXcall {
-  constructor(props) {
+  constructor(props = defaultProps) {
     this.httpProvider = new HttpProvider(props.rpc.icon);
     this.iconService = new IconService.default(this.httpProvider);
     this.wallets = props.wallet;
     this.nid = props.nid;
     this.contracts = props.contract;
     this.ethers = ethers;
+    this.network = props.network;
     this.iconWallet = IconWallet.loadKeystore(
       this.getKeystore(this.wallets.icon.keystorePath),
       this.wallets.icon.password
@@ -240,6 +272,11 @@ class TestXcall {
       console.log(e);
     }
   }
+}
+
+function getDeployments() {
+  const f = fs.readFileSync("./deployments.json", "utf8");
+  return JSON.parse(f);
 }
 
 module.exports = TestXcall;
