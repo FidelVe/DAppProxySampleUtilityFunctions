@@ -20,7 +20,7 @@ const defaultProps = {
   rpc: {
     icon:
       process.env.ICON_RPC === ""
-        ? "http://localhost:9080"
+        ? "http://localhost:9080/api/v3"
         : process.env.ICON_RPC,
     hardhat: "",
   },

@@ -24,7 +24,7 @@ const config = {
 if (PK1 != "") {
   config.networks = {
     hardhat2: {
-      url: "https://server03.espanicon.team",
+      url: process.env.EVM_RPC,
       chainId: 1337,
       gasPrice: 20000000000,
       accounts: [PK1],
