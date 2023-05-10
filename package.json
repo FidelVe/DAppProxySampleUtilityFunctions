@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "make run",
+    "start": "make run-local",
+    "start-remote": "make run-remote",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
