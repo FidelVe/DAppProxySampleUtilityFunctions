@@ -19,7 +19,7 @@ const deployments = getDeployments();
 const defaultProps = {
   rpc: {
     icon:
-      process.env.ICON_RPC === ""
+      process.env.ICON_RPC === "" || process.env.ICON_RPC == null
         ? "http://localhost:9080/api/v3"
         : process.env.ICON_RPC,
     hardhat: "",
