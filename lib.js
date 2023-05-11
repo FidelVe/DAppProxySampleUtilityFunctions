@@ -279,7 +279,19 @@ class TestXcall {
 
 function getDeployments() {
   const f = fs.readFileSync("./deployments.json", "utf8");
-  return JSON.parse(f);
+  const ff = JSON.parse(f);
+  const result = {
+    icon: {},
+    hardhat: { ...ff.hardhat },
+  };
+
+  if (ff.icon != null) {
+    result.icon = { ...ff.icon };
+  } else if (ff.icon0 != null) {
+    result.icon = { ...ff.icon0 };
+  }
+
+  return result;
 }
 
 module.exports = TestXcall;
