@@ -7,7 +7,7 @@ const Web3Utils = require("web3-utils");
 const fs = require("fs");
 
 // CONSTANTS
-// CHANGE THIS VALUES TO YOUR OWN
+// CHANGE THESE VALUES TO YOUR OWN
 
 const ICON_WALLET_PK =
   "573b555367d6734ea0fecd0653ba02659fa19f7dc6ee5b93ec781350bda27376";
@@ -25,7 +25,7 @@ const {
   IconBuilder,
   SignedTransaction,
   IconConverter,
-  HttpProvider,
+  HttpProvider
 } = IconService.default;
 
 const { CallTransactionBuilder } = IconBuilder;
@@ -92,7 +92,7 @@ function filterEventEVM(contract, filter, receipt) {
   if (receipt.events && typeof topics[0] === "string") {
     const fragment = inf.getEvent(topics[0]);
     return receipt.events
-      .filter((event) => {
+      .filter(event => {
         if (event.address == address) {
           return topics.every((v, i) => {
             if (!v) {
@@ -106,9 +106,9 @@ function filterEventEVM(contract, filter, receipt) {
         }
         return false;
       })
-      .map((event) => {
+      .map(event => {
         return {
-          args: inf.decodeEventLog(fragment, event.data, event.topics),
+          args: inf.decodeEventLog(fragment, event.data, event.topics)
         };
       });
   }
@@ -181,7 +181,7 @@ async function sendCallMessage(to, data) {
       .method("sendCallMessage")
       .params({
         _to: to,
-        _data: data,
+        _data: data
       })
       .build();
 
@@ -216,7 +216,7 @@ function parseCallMessageSentEvent(event) {
     _from: indexed[1],
     _to: indexed[2],
     _sn: BigNumber.from(indexed[3]),
-    _nsn: BigNumber.from(data[0]),
+    _nsn: BigNumber.from(data[0])
   };
 }
 
@@ -229,7 +229,7 @@ async function getEventLogs(txHash) {
 }
 
 function filterEventICON(eventlogs, sig, address) {
-  return eventlogs.filter((event) => {
+  return eventlogs.filter(event => {
     return (
       event.indexed &&
       event.indexed[0] === sig &&
@@ -244,7 +244,7 @@ function getBtpAddress(network, address) {
 }
 
 async function sleep(time) {
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     setTimeout(resolve, time);
   });
 }
@@ -316,8 +316,9 @@ async function main() {
     console.log("\n## Call message event logs:", callMesageEventLogs);
 
     // Get the call message sent event
-    const parsedCallMessageSentEvent =
-      parseCallMessageSentEvent(callMesageEventLogs);
+    const parsedCallMessageSentEvent = parseCallMessageSentEvent(
+      callMesageEventLogs
+    );
     console.log(
       "\n## Parsed call message sent event:",
       parsedCallMessageSentEvent
