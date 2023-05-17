@@ -162,10 +162,6 @@ async function waitEventEVM(contract, filterCM) {
 }
 
 // ICON CHAIN FUNCTIONS
-async function sendSignedTxICON() {
-  //
-}
-
 async function sendCallMessage(to, data) {
   try {
     const wallet = ICON_SIGNER;
@@ -220,14 +216,6 @@ function parseCallMessageSentEvent(event) {
   };
 }
 
-async function getEventLogs(txHash) {
-  const txResult = await getTransactionResultICON(txHash);
-  if (txResult && txResult.eventLogs.length > 0) {
-    return txResult.eventLogs;
-  }
-  return null;
-}
-
 function filterEventICON(eventlogs, sig, address) {
   return eventlogs.filter(event => {
     return (
@@ -258,23 +246,6 @@ function decodeMessage(msg) {
   const decoded = Web3Utils.hexToString(msg);
   return decoded;
 }
-
-void sendSignedTxEVM;
-void getContractObjectEVM;
-void encodeMessage;
-void decodeMessage;
-void sendCallMessage;
-void getBtpAddress;
-void getTransactionResultICON;
-void sleep;
-void parseCallMessageSentEvent;
-void getEventLogs;
-void filterEventICON;
-void filterEventEVM;
-void checkCallExecuted;
-void verifyReceivedMessage;
-void executeCall;
-void waitEventEVM;
 
 // MAIN LOGIC
 
@@ -347,7 +318,6 @@ async function main() {
 
     // check the CallExecuted event
     console.log("\n ## Waiting for CallExecuted event on evm chain...");
-    const callExecutedFilters = xcallEvmContract.filters.CallExecuted();
     const callExecutedEvent = await checkCallExecuted(
       executeCallTxHash,
       xcallEvmContract
