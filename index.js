@@ -22,7 +22,8 @@ const {
   getBlockICON,
   filterEventFromBlock,
   waitEventICON,
-  waitResponseMessageEvent
+  waitResponseMessageEvent,
+  waitRollbackMessageEvent
 } = require("./lib");
 
 // CONSTANTS
@@ -61,7 +62,9 @@ async function main(useRollback = false) {
     // });
 
     // Encode the message to send
-    const dataToSend = encodeMessage("Hello from ICON");
+    const dataToSend = useRollback
+      ? encodeMessage("revertMessage")
+      : encodeMessage("Hello from ICON");
     console.log("\n## Encoded message:", dataToSend);
 
     // Get the dapp contract btp address on the evm chain
@@ -88,7 +91,9 @@ async function main(useRollback = false) {
       callMessageTxHash
     );
     // console.log("\n## Call message tx result:", callMessageTxResult);
-    debugTxHash = callMessageTxResult.txHash;
+    if (callMessageTxResult.status !== 1) {
+      debugTxHash = callMessageTxResult.txHash;
+    }
 
     // Filter transaction events on ICON chain
     const callMesageEventLogs = filterEventICON(
@@ -158,6 +163,7 @@ async function main(useRollback = false) {
       console.log("\n ## rollback option not null...");
       // for scenarios where use rollback is not null we execute
       // the following logic
+      //
       // check for ResponseMessage event on source chain
       const responseMessageEvent = await waitResponseMessageEvent(messageId);
       if (responseMessageEvent == null) {
@@ -165,16 +171,23 @@ async function main(useRollback = false) {
       }
       console.log("## responseMessageEvent:");
       console.log(responseMessageEvent);
+
+      // check for RollbackMessage event on source chain
+      const rollbackMessageEvent = await waitRollbackMessageEvent(messageId);
+      console.log("## rollbackMessageEvent:");
+      console.log(rollbackMessageEvent);
     }
   } catch (e) {
     console.log("error running main function:", e);
-    const debug = await makeDebugTraceRequest(debugTxHash);
-    console.log("debug trace");
-    console.log(debug);
-    debug.result.logs.map(log => {
-      console.log("\n");
-      console.log(log);
-    });
+    if (debugTxHash) {
+      const debug = await makeDebugTraceRequest(debugTxHash);
+      console.log("debug trace");
+      console.log(debug);
+      debug.result.logs.map(log => {
+        console.log("\n");
+        console.log(log);
+      });
+    }
   }
 }
 

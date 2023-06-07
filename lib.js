@@ -119,47 +119,32 @@ function filterEventEVM(contract, filter, receipt) {
   return [];
 }
 
-async function checkCallExecuted(receipts, contract) {
+function getCustomEVMEvent(receipts, contract, eventName) {
   let event;
   const logs = filterEventEVM(
     contract,
-    contract.filters.CallExecuted(),
+    contract.filters[eventName](),
     receipts
   );
   if (logs.length > 0) {
     event = logs[0].args;
   }
+  return event;
+}
+
+function checkCallExecuted(receipts, contract) {
+  const event = getCustomEVMEvent(receipts, contract, "CallExecuted");
   return event;
 }
 
 function verifyReceivedMessage(receipts) {
   const contract = getDappContractEVM();
-  let event;
-  const logs = filterEventEVM(
-    contract,
-    contract.filters.MessageReceived(),
-    receipts
-  );
-  if (logs.length > 0) {
-    event = logs[0].args;
-  }
+  const event = getCustomEVMEvent(receipts, contract, "MessageReceived");
   return event;
 }
 
 function getResponseMessageEventEVM(receipts, contract) {
-  console.log("contract filters");
-  console.log(contract.filters);
-  let event;
-  const logs = filterEventEVM(
-    contract,
-    contract.filters.ResponseMessage(),
-    receipts
-  );
-  console.log("logs");
-  console.log(logs);
-  if (logs.length > 0) {
-    event = logs[0].args;
-  }
+  const event = getCustomEVMEvent(receipts, contract, "ResponseMessage");
   return event;
 }
 
@@ -192,7 +177,8 @@ async function sendCallMessage(to, data, useRollback = false) {
     };
 
     if (useRollback) {
-      params["_rollback"] = encodeMessage("rollback message");
+      // params["_rollback"] = encodeMessage("rollback message");
+      params["_rollback"] = encodeMessage("revertMessage");
     }
 
     // get the fee for the transaction
@@ -316,7 +302,13 @@ async function waitResponseMessageEvent(id) {
   return await waitEventICON(sig, ICON_XCALL_ADDRESS, id);
 }
 
+async function waitRollbackMessageEvent(id) {
+  const sig = "RollbackMessage(int)";
+  return await waitEventICON(sig, ICON_XCALL_ADDRESS, id);
+}
+
 async function waitEventICON(sig, address, id) {
+  console.log(`## Waiting for event ${sig} on ${address} with id ${id}`);
   const maxBlocksToCheck = 5;
   let blocksChecked = 0;
   const latestBlock = await getBlockICON("latest");
@@ -334,7 +326,9 @@ async function waitEventICON(sig, address, id) {
     const block = await getBlockICON(blockNumber);
     const txsInBlock = await getTransactionsFromBlock(block);
     for (const tx of txsInBlock) {
+      console.log("## all events:", tx.eventLogs);
       const filteredEvents = filterEventICON(tx.eventLogs, sig, address);
+      console.log("## filtered events:", filteredEvents);
       if (filteredEvents.length > 0) {
         for (const event of filteredEvents) {
           if (event.indexed[1] == id._hex) {
@@ -593,5 +587,6 @@ module.exports = {
   getBlockICON,
   getTransactionsFromBlock,
   waitEventICON,
-  waitResponseMessageEvent
+  waitResponseMessageEvent,
+  waitRollbackMessageEvent
 };
