@@ -128,6 +128,8 @@ function getCustomEVMEvent(receipts, contract, eventName) {
   );
   if (logs.length > 0) {
     event = logs[0].args;
+  } else {
+    throw new Error(`${eventName} event not found`);
   }
   return event;
 }
@@ -199,8 +201,6 @@ async function sendCallMessage(to, data, useRollback = false) {
       // .value("0x1a055690d9db80000")
       .build();
 
-    // console.log("# sendCallMessage tx object:");
-    // console.log(txObj);
     const signedTransaction = new SignedTransaction(txObj, wallet);
     console.log("## signed transaction");
     console.log(signedTransaction.getRawTransaction());
@@ -297,19 +297,21 @@ function filterEventICON(eventlogs, sig, address) {
   });
 }
 
-async function waitResponseMessageEvent(id) {
+async function waitResponseMessageEvent(id, blocksToWait = 5) {
   const sig = "ResponseMessage(int,int,str)";
-  return await waitEventICON(sig, ICON_XCALL_ADDRESS, id);
+  const parseId = id.toHexString();
+  return await waitEventICON(sig, ICON_XCALL_ADDRESS, parseId, blocksToWait);
 }
 
-async function waitRollbackMessageEvent(id) {
+async function waitRollbackMessageEvent(id, blocksToWait = 20) {
   const sig = "RollbackMessage(int)";
-  return await waitEventICON(sig, ICON_XCALL_ADDRESS, id);
+  const parseId = id.toHexString();
+  return await waitEventICON(sig, ICON_XCALL_ADDRESS, parseId, blocksToWait);
 }
 
-async function waitEventICON(sig, address, id) {
+async function waitEventICON(sig, address, id, blocksToWait = 5) {
   console.log(`## Waiting for event ${sig} on ${address} with id ${id}`);
-  const maxBlocksToCheck = 5;
+  const maxBlocksToCheck = blocksToWait;
   let blocksChecked = 0;
   const latestBlock = await getBlockICON("latest");
   let blockNumber = latestBlock.height - 2;
@@ -326,12 +328,12 @@ async function waitEventICON(sig, address, id) {
     const block = await getBlockICON(blockNumber);
     const txsInBlock = await getTransactionsFromBlock(block);
     for (const tx of txsInBlock) {
-      console.log("## all events:", tx.eventLogs);
       const filteredEvents = filterEventICON(tx.eventLogs, sig, address);
-      console.log("## filtered events:", filteredEvents);
       if (filteredEvents.length > 0) {
         for (const event of filteredEvents) {
-          if (event.indexed[1] == id._hex) {
+          const idNumber = parseInt(id);
+          const eventIdNumber = parseInt(event.indexed[1]);
+          if (eventIdNumber == idNumber) {
             return event;
           }
         }

@@ -46,7 +46,7 @@ const ICON_SIGNER = IconWallet.loadPrivateKey(ICON_WALLET_PK);
 
 // MAIN LOGIC
 
-async function main(useRollback = false) {
+async function main(useRollback = false, revertMessage = false) {
   let debugTxHash;
 
   try {
@@ -62,9 +62,10 @@ async function main(useRollback = false) {
     // });
 
     // Encode the message to send
-    const dataToSend = useRollback
-      ? encodeMessage("revertMessage")
-      : encodeMessage("Hello from ICON");
+    const dataToSend =
+      useRollback && revertMessage
+        ? encodeMessage("revertMessage")
+        : encodeMessage("Hello from ICON");
     console.log("\n## Encoded message:", dataToSend);
 
     // Get the dapp contract btp address on the evm chain
@@ -149,15 +150,19 @@ async function main(useRollback = false) {
     console.log("_code: ", callExecutedEvent._code);
     console.log("_msg: ", callExecutedEvent._msg);
 
-    // verify the received message
-    console.log("\n ## verifying the received message on evm chain...");
-    const verifyReceivedEvent = await verifyReceivedMessage(executeCallTxHash);
-    console.log(verifyReceivedEvent);
+    if (!revertMessage) {
+      // if revertMessage is false we verify the received message
+      console.log("\n ## verifying the received message on evm chain...");
+      const verifyReceivedEvent = await verifyReceivedMessage(
+        executeCallTxHash
+      );
+      console.log(verifyReceivedEvent);
 
-    // decode the received message
-    console.log("\n ## decode received message");
-    const decodedMessage = decodeMessage(verifyReceivedEvent._data);
-    console.log("decodedMessage:", decodedMessage);
+      // decode the received message
+      console.log("\n ## decode received message");
+      const decodedMessage = decodeMessage(verifyReceivedEvent._data);
+      console.log("decodedMessage:", decodedMessage);
+    }
 
     if (useRollback) {
       console.log("\n ## rollback option not null...");
@@ -191,4 +196,5 @@ async function main(useRollback = false) {
   }
 }
 
-main(true);
+main(true, true);
+// main();
