@@ -309,6 +309,11 @@ async function waitRollbackMessageEvent(id, blocksToWait = 20) {
   return await waitEventICON(sig, ICON_XCALL_ADDRESS, parseId, blocksToWait);
 }
 
+async function waitRollbackExecutedEvent(id, blocksToWait = 20) {
+  const sig = "RollbackExecuted(int,int,str)";
+  const parseId = id.toHexString();
+  return await waitEventICON(sig, ICON_XCALL_ADDRESS, parseId, blocksToWait);
+}
 async function waitEventICON(sig, address, id, blocksToWait = 5) {
   console.log(`## Waiting for event ${sig} on ${address} with id ${id}`);
   const maxBlocksToCheck = blocksToWait;
@@ -361,6 +366,35 @@ async function getTxResultWaited(txHash) {
   }
 
   return null;
+}
+
+async function executeRollbackICON(id) {
+  try {
+    const wallet = ICON_SIGNER;
+    const params = {
+      _sn: id.toHexString()
+    };
+
+    const txObj = new CallTransactionBuilder()
+      .from(wallet.getAddress())
+      .to(ICON_XCALL_ADDRESS)
+      .stepLimit(IconConverter.toBigNumber(2000000))
+      .nid(IconConverter.toBigNumber(ICON_RPC_NID))
+      .nonce(IconConverter.toBigNumber(1))
+      .version(IconConverter.toBigNumber(3))
+      .timestamp(new Date().getTime() * 1000)
+      .method("executeRollback")
+      .params(params)
+      .build();
+
+    const signedTransaction = new SignedTransaction(txObj, wallet);
+    console.log("## executeRollback signed transaction");
+    console.log(signedTransaction.getRawTransaction());
+    return await ICON_SERVICE.sendTransaction(signedTransaction).execute();
+  } catch (e) {
+    console.log("Error running executeRollback");
+    throw new Error(e);
+  }
 }
 
 // UTILITY FUNCTIONS
@@ -590,5 +624,7 @@ module.exports = {
   getTransactionsFromBlock,
   waitEventICON,
   waitResponseMessageEvent,
-  waitRollbackMessageEvent
+  waitRollbackMessageEvent,
+  executeRollbackICON,
+  waitRollbackExecutedEvent
 };

@@ -23,7 +23,9 @@ const {
   filterEventFromBlock,
   waitEventICON,
   waitResponseMessageEvent,
-  waitRollbackMessageEvent
+  waitRollbackMessageEvent,
+  executeRollbackICON,
+  waitRollbackExecutedEvent
 } = require("./lib");
 
 // CONSTANTS
@@ -181,6 +183,23 @@ async function main(useRollback = false, revertMessage = false) {
       const rollbackMessageEvent = await waitRollbackMessageEvent(messageId);
       console.log("## rollbackMessageEvent:");
       console.log(rollbackMessageEvent);
+
+      // if rollbackMessage event was emmitted, executeRollback
+      if (rollbackMessageEvent != null) {
+        const executeRollbackTxHash = await executeRollbackICON(messageId);
+        console.log("\n## executeRollback tx hash:", executeRollbackTxHash);
+        const executeRollbackTxResult = await getTransactionResultICON(
+          executeRollbackTxHash
+        );
+        console.log("\n## executeRollback tx result:", executeRollbackTxResult);
+
+        // check for RollbackExecuted event on source chain
+        const rollbackExecutedEvent = await waitRollbackExecutedEvent(
+          messageId
+        );
+        console.log("## rollbackExecutedEvent:");
+        console.log(rollbackExecutedEvent);
+      }
     }
   } catch (e) {
     console.log("error running main function:", e);
