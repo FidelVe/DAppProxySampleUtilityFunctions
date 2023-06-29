@@ -24,3 +24,6 @@ const config = {
 
 module.exports = config;
 ```
+
+## Further Resources
+* Local Testing BTP - https://docs.icon.community/cross-chain-communication/xcall/local-testing
