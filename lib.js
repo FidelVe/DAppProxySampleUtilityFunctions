@@ -19,7 +19,7 @@ const {
   EVM_XCALL_ADDRESS,
   EVM_DAPP_ADDRESS,
   EVM_CHAIN_LABEL,
-  ICON_CHAIN_LABEL,
+  // ICON_CHAIN_LABEL,
   ICON_RPC_URL,
   EVM_RPC_URL,
   ICON_RPC_NID
@@ -150,7 +150,16 @@ function getResponseMessageEventEVM(receipts, contract) {
   return event;
 }
 
+function getAllEvents(contract) {
+  contract.on("CallMessage", (...params) => {
+    console.log(JSON.stringify(params));
+  });
+}
+
 async function waitEventEVM(contract, filterCM) {
+  console.log("filterCM");
+  console.log(filterCM);
+  // getAllEvents(contract);
   let height = await contract.provider.getBlockNumber();
   let next = height + 1;
   while (true) {

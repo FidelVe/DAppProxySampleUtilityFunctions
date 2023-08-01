@@ -1,6 +1,5 @@
 // IMPORTS
 require("dotenv").config();
-const IconService = require("icon-sdk-js");
 const config = require("./config");
 
 const {
@@ -14,14 +13,9 @@ const {
   executeCall,
   checkCallExecuted,
   verifyReceivedMessage,
-  verifyResponseMessage,
   waitEventEVM,
   sendCallMessage,
   makeDebugTraceRequest,
-  makeGetScoreApiRequest,
-  getBlockICON,
-  filterEventFromBlock,
-  waitEventICON,
   waitResponseMessageEvent,
   waitRollbackMessageEvent,
   executeRollbackICON,
@@ -32,19 +26,12 @@ const {
 // CHANGE THESE VALUES TO YOUR OWN IN THE config.js FILE
 
 const {
-  ICON_WALLET_PK,
   ICON_XCALL_ADDRESS,
   ICON_DAPP_ADDRESS,
   EVM_DAPP_ADDRESS,
   EVM_CHAIN_LABEL,
-  ICON_CHAIN_LABEL,
-  ICON_RPC_URL
+  ICON_CHAIN_LABEL
 } = config;
-
-// SETTINGS
-const { IconWallet } = IconService.default;
-
-const ICON_SIGNER = IconWallet.loadPrivateKey(ICON_WALLET_PK);
 
 // MAIN LOGIC
 
@@ -52,17 +39,6 @@ async function main(useRollback = false, revertMessage = false) {
   let debugTxHash;
 
   try {
-    // get xcall score api on icon chain
-    // const xcallAbiIcon = await makeGetScoreApiRequest(
-    //   ICON_RPC_URL,
-    //   ICON_DAPP_ADDRESS
-    // );
-    // console.log("\n## Xcall abi on icon chain:", xcallAbiIcon);
-    // xcallAbiIcon.result.map(abi => {
-    //   console.log("name:" + abi.name);
-    //   console.log(abi.inputs);
-    // });
-
     // Encode the message to send
     const dataToSend =
       useRollback && revertMessage
@@ -75,11 +51,7 @@ async function main(useRollback = false, revertMessage = false) {
       EVM_CHAIN_LABEL,
       EVM_DAPP_ADDRESS
     );
-    const btpAddressSource = getBtpAddress(
-      ICON_CHAIN_LABEL,
-      // ICON_SIGNER.getAddress()
-      ICON_DAPP_ADDRESS
-    );
+    const btpAddressSource = getBtpAddress(ICON_CHAIN_LABEL, ICON_DAPP_ADDRESS);
 
     // send the call message to the evm chain
     const callMessageTxHash = await sendCallMessage(
@@ -106,7 +78,7 @@ async function main(useRollback = false, revertMessage = false) {
     );
     console.log("\n## Call message event logs:", callMesageEventLogs);
 
-    // Get the call message sent event
+    // Get the CallMessageSent event
     const parsedCallMessageSentEvent = parseCallMessageSentEvent(
       callMesageEventLogs
     );
@@ -119,10 +91,11 @@ async function main(useRollback = false, revertMessage = false) {
     const xcallEvmContract = getXcallContractEVM();
     // console.log("xcall contract on evm chain:", xcallEvmContract);
 
-    // get callMessageSent event on evm chain
+    // get callMessage event on evm chain
     const callMessageFilters = xcallEvmContract.filters.CallMessage(
       btpAddressSource,
-      EVM_DAPP_ADDRESS
+      EVM_DAPP_ADDRESS,
+      parsedCallMessageSentEvent["_sn"]
     );
     console.log("## callMessageFilters:", callMessageFilters);
     console.log(btpAddressSource);
