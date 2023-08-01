@@ -103,15 +103,14 @@ async function main(useRollback = false, revertMessage = false) {
     console.log("\n ## Waiting for callMessage event on evm chain...");
     const events = await waitEventEVM(xcallEvmContract, callMessageFilters);
     const messageId = events[0].args._reqId;
-    console.log("## events params:");
-    console.log("_from:", events[0].args._from);
-    console.log("_to:", events[0].args._to);
-    console.log("_ReqId:", messageId);
-    console.log("_sn:", events[0].args._sn);
+    console.log("## events params:", events[0].args);
 
     // invoke executeCall on destination chain
     console.log("\n ## Invoke executeCall on destination chain...");
-    const executeCallTxHash = await executeCall(messageId);
+    const executeCallTxHash = await executeCall(
+      messageId,
+      events[0].args._data
+    );
     // console.log("executeCallTxHash:", executeCallTxHash);
 
     // check the CallExecuted event

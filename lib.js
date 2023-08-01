@@ -72,10 +72,10 @@ function getXcallContractEVM() {
   }
 }
 
-async function executeCall(reqId) {
+async function executeCall(reqId, data) {
   try {
     const contract = getXcallContractEVM();
-    return await sendSignedTxEVM(contract, "executeCall", reqId);
+    return await sendSignedTxEVM(contract, "executeCall", reqId, data);
   } catch (e) {
     console.log("error running executeCall");
     console.log(e);
